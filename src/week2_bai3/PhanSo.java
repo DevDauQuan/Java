@@ -5,6 +5,7 @@
 package week2_bai3;
 
 import java.io.Serializable;
+import java.util.logging.Logger;
 
 /**
  *
@@ -12,15 +13,11 @@ import java.io.Serializable;
  */
 public class PhanSo implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(PhanSo.class.getName());
+
     private int tuso;
     private int mauso;
-
-    public PhanSo(boolean a) {
-        tuso = (int) (Math.random() * 100);
-        do {
-            mauso = (int) (Math.random() * 90 + 1);
-        } while (mauso == 0);
-    }
 
     public PhanSo() {
         tuso = (int) (Math.random() * 100);
@@ -39,7 +36,15 @@ public class PhanSo implements Serializable {
     }
 
     public String toString() {
-        return tuso + "/" + mauso;
+         if (this.mauso == 1) {
+            return String.valueOf(this.tuso);
+        } else {
+            return this.tuso + "/" + this.mauso;
+        }
+    }
+
+    public int getTuso() {
+        return tuso;
     }
 
     public int getMauso() {
@@ -58,4 +63,23 @@ public class PhanSo implements Serializable {
         }
         return true;
     }
+    
+    public PhanSo toPhanSo(String strPS) {
+        String x = "";
+        for (int index = 0; index < strPS.length(); index++) {
+            if (strPS.charAt(index) != '/') {
+                x += strPS.charAt(index);
+            } else {
+                this.tuso = Integer.parseInt(x);
+                x = "";
+            }
+        }
+        try {
+            this.mauso = Integer.parseInt(x);
+        } catch (NumberFormatException e) {
+             this.mauso = 1;
+        }
+        return this;
+    }
+    
 }

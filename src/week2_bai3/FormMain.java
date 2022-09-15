@@ -4,17 +4,21 @@
  */
 package week2_bai3;
 
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.ObjectOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author ACER
  */
+@SuppressWarnings("ClassWithoutLogger")
 public class FormMain extends javax.swing.JFrame {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * Creates new form FormMain
@@ -47,11 +51,6 @@ public class FormMain extends javax.swing.JFrame {
 
         jLabel2.setText("Kết quả");
 
-        listPhanSo.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         jScrollPane1.setViewportView(listPhanSo);
 
         btnCW.setText("Tạo phân số và ghi vào file");
@@ -84,21 +83,19 @@ public class FormMain extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(40, 40, 40)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(44, 44, 44)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addGap(32, 32, 32)
-                                .addComponent(txtPhanSo, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addGap(32, 32, 32)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+                            .addComponent(txtPhanSo)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(17, 17, 17)
                         .addComponent(btnCW)
                         .addGap(59, 59, 59)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnExit)
-                            .addComponent(btnRead))))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btnExit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnRead, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap(80, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -124,37 +121,48 @@ public class FormMain extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    @SuppressWarnings("ConvertToTryWithResources")
     private void btnCWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCWActionPerformed
-        // TODO add your handling code here:
         try {
-//            FileOutputStream fo = new FileOutputStream("newfile.txt");
-//            BufferedOutputStream bo = new BufferedOutputStream(fo);
-//            ObjectOutputStream oo = new ObjectOutputStream(bo);            
-            FileWriter fw = new FileWriter("phanso.txt");
-
-            DefaultListModel dm = new DefaultListModel();
-            for (int i = 0; i < Integer.parseInt(txtPhanSo.getText()); i++) {
-                PhanSo ps = new PhanSo(true);
-                fw.write(ps.toString() + "\n");
-                System.out.println(ps);
-
-                //oo.writeObject(ps);
-                dm.addElement(ps);
-
-            }
-            listPhanSo.setModel(dm);
-            //oo.close();
-        } catch (Exception e) {
+            FileWriter fw = new FileWriter("file.txt", true);
+            PhanSo ps = new PhanSo();
+            fw.write(ps.toString() + "\n");
+            fw.close();
+            JOptionPane.showMessageDialog(null, "Thêm và lưu file thành công phân số " + ps.toString(), "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+                        JOptionPane.showMessageDialog(null, "Lưu file không thành công", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-
     }//GEN-LAST:event_btnCWActionPerformed
 
+    @SuppressWarnings({"ConvertToTryWithResources", "NestedAssignment", "unchecked"})
     private void btnReadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReadActionPerformed
-        // TODO add your handling code here:        
+        @SuppressWarnings("CollectionWithoutInitialCapacity")
+        ArrayList<PhanSo> dsPS = new ArrayList<>();
+        String strPS = "";
+        try {
+            FileReader fr = new FileReader("file.txt");
+            int i;
+            while ((i = fr.read()) != -1) {
+                if ((char) i == '\n') {
+                    dsPS.add(new PhanSo().toPhanSo(strPS));
+                    strPS = "";
+                } else {
+                    strPS += (char) i;
+                }
+            }
+            fr.close();
+        } catch (IOException e) {
+        }
+        txtPhanSo.setText(String.valueOf(dsPS.size()));
+        DefaultListModel model = new DefaultListModel();
+        for (PhanSo phanSo : dsPS) {
+            model.addElement(phanSo.toString() + "\n");
+        }
+        listPhanSo.setModel(model);
     }//GEN-LAST:event_btnReadActionPerformed
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
-        // TODO add your handling code here:
+        this.dispose();
     }//GEN-LAST:event_btnExitActionPerformed
 
     /**
